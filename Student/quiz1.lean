@@ -10,18 +10,17 @@ need for this class.
 
 What is the type of (the identifier) Bool in Lean?
 
-Replace the blank with your answer here: ____
+Replace the blank with your answer here: Type
 
 Remember you can use Lean to #check your answer!
 -/
-
 
 
 /-! Question #2:
 
 Is class moving too fast, too slow, or about right for you?
 
-Write your answer here: __________
+Write your answer here: The pace is fine
 
 If you said "too fast," please explain briefly what ideas
 you're most struggling with, here: 
