@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  cs2120f23:
+    image: cs2120f23
+    build:
+      context: .
+      dockerfile: ./Dockerfile
