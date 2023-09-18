@@ -30,7 +30,13 @@ a result.
 
 -- Answer below
 
+def funkom {α β γ : Type} : 
+(β → γ) →
+(α → β) → 
+(α → γ)
+|g, f => (fun a => g (f a))
 
+#check funkom
 /-! 
 ## Problem #2
 
@@ -39,7 +45,13 @@ Define a function of the following polymorphic type:
 -/
 
 -- Answer below
+def mkop {α β : Type} : 
+α → β → Prod α β
+|a, b => Prod.mk a b
 
+
+
+#check mkop
 
 
 /-! 
@@ -50,10 +62,12 @@ Define a function of the following polymorphic type:
 -/
 
 -- Answer below
+def op_left {α β : Type} :
+Prod α β → α
+| Prod.mk a _ => a
 
-
-
-
+#eval op_left (mkop "Hello" 1)
+#check op_left
 /-! 
 ## Problem #4
 
@@ -62,9 +76,12 @@ Define a function of the following polymorphic type:
 -/
 
 -- Answer below
+def op_right {α β : Type} :
+Prod α β → β
+| Prod.mk _ b => b
 
-
-
+#eval op_right (mkop "Hello" 1)
+#check op_right
 /-! 
 ## Problem #5
 
@@ -97,7 +114,51 @@ Include test cases using #reduce to show that the reward
 from each weekday is *money* and the reward from a weekend
 day is *health*.
 -/
+namespace Problem5
 
+inductive Day : Type
+| sunday
+| monday
+| tuesday
+| wednesday
+| thursday
+| friday
+| saturday
+
+open Day
+
+inductive Kind : Type
+| work
+| play
+
+open Kind
+
+def day2kind : Day → Kind
+| sunday => play
+| monday => work
+| tuesday => work
+| wednesday => work
+| thursday => work
+| friday => work
+| saturday => play
+
+inductive Reward : Type
+| money
+| health
+
+open Reward
+
+def kind2reward : Kind → Reward
+| work => money
+| play => health
+
+def day2reward : Day → Reward
+| a => funkom kind2reward day2kind a
+
+#reduce day2reward sunday --expect health
+#reduce day2reward monday --expect money
+
+end Problem5
 /-!
 ## Problem #6
 
@@ -113,7 +174,8 @@ Consider the outputs of the following #check commands.
 Is × left associative or right associative? Briefly explain
 how you reached your answer.
 
-Answer here: 
+Answer here: Right associative, since putting the parentheses
+on the right did not change the type.
 
 ### B.
 Define a function, *triple*, of the following type:
@@ -121,6 +183,8 @@ Define a function, *triple*, of the following type:
 -/
 
 -- Here:
+def triple {α β γ : Type} : α → β → γ → α × β × γ 
+|a, b, c => Prod.mk a (Prod.mk b c)
 
 /-!
 ### C.
@@ -131,7 +195,17 @@ second, or third elements.
 -/
 
 -- Here:
+def first {α β γ : Type} :
+α × β × γ → α
+| Prod.mk a (Prod.mk _ _) => a
 
+def second {α β γ : Type} :
+α × β × γ → β
+| Prod.mk _ (Prod.mk b _) => b
+
+def third {α β γ : Type} :
+α × β × γ → γ
+| Prod.mk _ (Prod.mk _ g) => g
 /-!
 ### D.
 Write three test cases using #eval to show that when 
@@ -142,12 +216,26 @@ element of that triple.
 
 -- Here:
 
+def set1 := triple 1 2 3
+#eval set1 -- expect (1, 2, 3)
+
+def set2 := triple "Hello" true 5
+#eval set2 -- expect ("Hello", true, 5)
+
+#eval first set2 -- expect "Hello"
+#eval second set2 -- expect true
+#eval third set2 -- expect 5
 /-!
 ### E.
 Use #check to check the type of a term. that you make 
 up, of type (Nat × String) × Bool. The challenge here
 is to write a term of that type. 
 -/
+
+def weird_product : Nat → String → Bool → (Nat × String) × Bool
+|n, s, b => Prod.mk (Prod.mk n s) b
+
+#check weird_product
 
 
 
