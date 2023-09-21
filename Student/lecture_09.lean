@@ -85,6 +85,8 @@ def empty_to_empty'' : Empty → Empty
 
 def empty_to_empty' (e : Empty) := e -- return type inferred
 
+#reduce empty_to_empty'
+
 /-!
 This definition is subtle. Clearly it *is* possible to 
 define a function that promises to return a value of
@@ -151,6 +153,8 @@ def empty_to_bool :         Empty → Bool := nomatch e
 def empty_to_nat :          Empty → Nat  := nomatch e
 def empty_to_α (α : Type) : Empty → α    := nomatch e 
 
+#eval empty_to_bool
+
 /-!
 The final example is the general elimination rule
 for the Empty type: an empty match is a get out of
@@ -189,8 +193,14 @@ you conclude about the type, α? What's the only way
 you will be able to implement such a function? 
 -/
 
--- You answer here with a brief explanation
+-- α has to be an Empty type
 
+def sum_empty (α : Type) (e : Empty) : α ⊕ e → α
+| Sum.inl α => α
+| _ => _
+
+
+#eval sum_empty Sum Bool Empty
 /-!
 ## Exercises
 
