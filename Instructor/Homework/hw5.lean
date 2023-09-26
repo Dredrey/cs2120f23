@@ -305,9 +305,10 @@ def sum_f : (Nat → Nat) → Nat → Nat
 | f, 0 => f 0
 | f, n' + 1 => add (f (n' + 1)) (sum_f f n')
 
-def square : Nat → Nat
-| n => mul n n
+def square_and_add_one : Nat → Nat
+| n => add (mul n n) 1
 
-#eval sum_f square 4
+#eval square_and_add_one 2
+#eval sum_f square_and_add_one 10
 
 
