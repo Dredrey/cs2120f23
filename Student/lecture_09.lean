@@ -189,8 +189,9 @@ you conclude about the type, α? What's the only way
 you will be able to implement such a function? 
 -/
 
--- You answer here with a brief explanation
+def type2empty (α : Type) := α → Empty
 
+#check type2empty
 /-!
 ## Exercises
 

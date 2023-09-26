@@ -76,9 +76,10 @@ doing so makes the logical meaning clearer.
 def not_either_not_both { jam cheese } :
   ((no jam) ⊕ (no cheese)) → 
   (no (jam × cheese)) 
-| Sum.inl nojam => (fun _ => _)
-| Sum.inr _ => _
+| Sum.inl nojam => fun (jam, _) => nojam jam
+| Sum.inr nocheese => fun (_, cheese) => nocheese cheese
 
+#check not_either_not_both
 /-!
 ### #2: Not One or Not the Other Implies Not Both
 Now prove this principle *in general* by defining a 
@@ -91,8 +92,9 @@ names, *jam* and *cheese*.
 -/
 
 def demorgan1  {α β : Type} : ((α → Empty) ⊕ (β → Empty)) → (α × β → Empty)  
-| (Sum.inl noa) => _
-| (Sum.inr nob) => _
+| (Sum.inl noa) => fun ((α, _)) => noa α
+| (Sum.inr nob) => fun((_, β)) => nob β
+
 
 /-!
 ### #3: Not Either Implies Not One And Not The Other
@@ -106,8 +108,9 @@ given *any* types, α and β,
 -/
 
 def demorgan2 {α β : Type} : (α ⊕ β → Empty) → ((α → Empty) × (β → Empty))
-| noaorb => _
+| noaorb => (fun a => noaorb (Sum.inl a), fun b => noaorb (Sum.inr b))
 
+#check demorgan2
 
 /-!
 ### #4: Not One And Not The Other Implies Not One Or The Other 
@@ -119,7 +122,12 @@ Hint: You might want to use an explicit match expression
 in writing your solution.
 -/
 def demorgan3 {α β : Type} : ((α → Empty) × (β → Empty)) → ((α ⊕ β) → Empty)  
-| _ => _
+| (a, b) => fun (g : (Sum α β)) => match g with
+| Sum.inl α => a α
+| Sum.inr β => b β 
+
+#check demorgan3
+
 
 /-!
 ## PART 2
@@ -147,9 +155,9 @@ be easy. Be sure you understand destructuring and pattern
 matching.  
 -/
 
--- Here
-
-
+def pred : Nat → Nat
+| 0 => 0
+| Nat.succ n' => n'
 
 -- Test cases
 #reduce pred 3    -- expect 2
@@ -164,7 +172,15 @@ n shells deep. The verify using #reduce that (mk_doll 3)
 returns the same doll as *d3*. 
 -/
 
--- Answer here
+inductive Doll : Type
+| solid
+| shell (d : Doll)
+
+open Doll
+
+def mk_doll : Nat → Doll
+| 0 => solid
+| Nat.succ n => shell (mk_doll n)
 
 
 
@@ -185,7 +201,7 @@ def nat_eq : Nat → Nat → Bool
 | 0, 0 => true
 | 0, n' + 1 => false
 | n' + 1, 0 => false
-| (n' + 1), (m' + 1) => _
+| (n' + 1), (m' + 1) => nat_eq n' m'
 
 -- a few tests
 #eval nat_eq 0 0
@@ -195,6 +211,7 @@ def nat_eq : Nat → Nat → Bool
 #eval nat_eq 2 0
 #eval nat_eq 2 1
 #eval nat_eq 2 2
+#eval nat_eq 500 500
 
 
 /-!
@@ -208,7 +225,22 @@ cases? Match to destructure them then return the right
 result *in each case*.
 -/
 
--- Here
+def nat_le : Nat → Nat → Bool
+| 0, 0 => true
+| 0, n + 1 => true
+| n + 1, 0 => false
+| n + 1, m + 1 => nat_le n m
+
+#eval nat_le 0 0
+#eval nat_le 0 1
+#eval nat_le 1 0
+#eval nat_le 1 1
+#eval nat_le 2 0
+#eval nat_le 2 1
+#eval nat_le 2 2
+#eval nat_le 500 500
+#eval nat_le 499 500
+#eval nat_le 501 500
 
 /-!
 ###  #5. Nat Number Addition 
@@ -219,7 +251,7 @@ a natural number addition function.
 
 def add : Nat → Nat → Nat
 | m, 0 => m
-| m, (Nat.succ n') => _   -- hint: recursion
+| m, (Nat.succ n') => add (Nat.succ m) n'  -- hint: recursion
 
 
 -- Some test cases
@@ -244,7 +276,15 @@ test cases to show that it appears to be working.
 
 def mul : Nat → Nat → Nat
 | m, 0 => 0
-| m, (Nat.succ n') => add (_) (_)
+| m, (Nat.succ n') => add (m) (mul m n')
+
+#reduce mul 2 0
+#reduce mul 0 1
+#reduce mul 2 2
+#reduce mul 3 2
+#reduce mul 4 4
+#reduce mul 5 5
+#reduce mul 9 3
 
 /-!
 ### Sum Binary Nat Function Over Range 0 to n 
@@ -262,7 +302,12 @@ to and including n.
 -/
 
 def sum_f : (Nat → Nat) → Nat → Nat 
-| f, 0 => _
-| f, n' + 1 => _
+| f, 0 => f 0
+| f, n' + 1 => add (f (n' + 1)) (sum_f f n')
+
+def square : Nat → Nat
+| n => mul n n
+
+#eval sum_f square 4
 
 
