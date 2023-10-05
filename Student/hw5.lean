@@ -253,6 +253,9 @@ def add : Nat → Nat → Nat
 | m, 0 => m
 | m, (Nat.succ n') => add (Nat.succ m) n'  -- hint: recursion
 
+def add' : Nat → Nat → Nat
+| 0, m => m
+| n + 1, m => add' n (m + 1)
 
 -- Some test cases
 #reduce add 0 0   -- expect 0

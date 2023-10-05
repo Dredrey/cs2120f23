@@ -24,6 +24,7 @@ inductive binary_op : Type
 | and
 | or
 | imp
+| iff
 
 inductive Expr : Type
 | var_exp (v : var)
@@ -52,10 +53,16 @@ def implies : Bool → Bool → Bool
 | true, false => false
 | _, _ => true
 
+def biimp : Bool → Bool → Bool
+| true, true => true
+| false, false => true
+| _, _ => false
+
 def eval_bin_op : binary_op → (Bool → Bool → Bool)
 | binary_op.and => and
 | binary_op.or => or
 | binary_op.imp => implies
+| binary_op.iff => biimp
 
 def Interp := var → Bool  
 
@@ -236,6 +243,8 @@ Next go back and extend our formalism to support the implies connective.
 Do the same for biimplication while you're at it.
 -/
 
+-- The definitions are written where all of the other boolean operations are definied.
+
 /-!
 ### Evaluate Propositions in Various Worlds
 
@@ -243,11 +252,24 @@ Now evaluate each of these expressions under the all_true and all_false
 interpretations.
 -/
 
+def e1 := C ⇔ B
 
+def e2 := C ⇒ B
+
+#eval eval_expr e1 (λ v => false) --expect true
+#eval eval_expr e1 (λ v => true) --expect true
+
+#eval eval_expr e2 (λ v => true) --expect true
+#eval eval_expr e2 (λ v => false) --expect true
 /-!
 ### Evaluate the Expressions Under Some Other Interpretation
 
 Define an interpretation other than these two and evaluate the propositions 
 under this new interpretation.
 -/
+
+def e3 := ¬C ⇔ B
+
+#eval eval_expr e3 (λ v => true)
+#eval eval_expr e3 (λ v => false)
 
