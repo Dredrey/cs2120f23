@@ -50,7 +50,7 @@ natural number, *n'*.
 -- Answer here
 
 def apply_n {α : Type} : (α → α) → α → Nat → α  
-| _, a, 0 => a
+| f, a, 0 => a
 | f, a, (n' + 1) => f (apply_n f a n')
 
 -- Test cases: confirm that expectations are correct
@@ -137,7 +137,7 @@ of the list.
 
 def len {α : Type} : List α → Nat
 | [] => 0
-| _::t => 1 + len t
+| h::t => 1 + len t
 
 #eval @len Nat []                   -- expect 0
 #eval len [0,1,2]                   -- expect 3
@@ -162,17 +162,16 @@ be for your function to work in all cases.
 -/
 
 def reduce_and : List Bool → Bool
-| true::t => and true (reduce_and t)
-| false::_ => false
 | [] => true
+| h::t => and h (reduce_and t)
 
 -- Test cases
 
-#eval reduce_and [true]                          -- expect true
-#eval reduce_and [false]                         -- expect false
-#eval reduce_and [true, true]                    -- expect true
-#eval reduce_and [false, true]                   -- expect false
-#eval reduce_and [true, true, true, true, false] -- expect false
+#eval reduce_and [true]           -- expect true
+#eval reduce_and [false]          -- expect false
+#eval reduce_and [true, true]     -- expect true
+#eval reduce_and [false, true]    -- expect false
+
 
 /-! 
 ### #4 Negate a List of Booleans 
@@ -187,12 +186,11 @@ should return [false, true].
 
 def map_not : List Bool → List Bool 
 | [] => []
-| h::t => ((!h)::(map_not t))   -- hint: use :: to construct answer
+| h::t => not h :: map_not t   -- hint: use :: to construct answer
 
 -- test cases
 #eval map_not []              -- exect []
 #eval map_not [true, false]   -- expect [false, true]
-#eval map_not [false, false, true, true]
 
 /-! 
 ### #5 List the First n Natural Numbers
@@ -205,7 +203,7 @@ of all the natural numbers from *n* to *0*, inclusive.
 -- Your answer here
 def countdown : Nat → List Nat
 | 0 => [0]
-| n + 1 => (n + 1)::(countdown n)
+| n' + 1 => (n' + 1)::countdown n'
 
 
 -- test cases
@@ -221,15 +219,14 @@ denoted *++*. Write your own list append function. Call
 it *concat*. For any type *α*, it takes two arguments of 
 type *List α* and returns a result of type *List α,* the
 result of appending the second list to the first. Hint:
-do case analysis on the first argument, and think about
-this function as an analog of natural number addition.
+do case analysis on the first argument.
 -/
 
 -- Here
 
 def concat {α : Type} : List α → List α → List α 
 | [], m => m
-| t::n, m => t::(concat n m)
+| h::t, m => h::concat t m
 
 -- Test cases
 
@@ -246,9 +243,8 @@ just that one element.
 -/
 
 -- Here
-
-def pure' {α : Type} : α → List α
-| a => a::[]
+def pure' : String → List String 
+| s => [s]
 
 #eval pure' "Hi"       -- expect ["Hi"]
 
@@ -263,43 +259,11 @@ list on the right. Instead, consider using *concat*.
 
 -- Answer here:
 
-def list_rev {α : Type} : List α → List α
+def rev {α : Type}: List α → List α
 | [] => []
-| t::n => concat (list_rev n) (pure' t)
+| h::t => t++[h]
 
-#eval list_rev [1, 2, 3, 4, 5]
+
 /-!
-## Part 2: Propositional Logic: Syntax and Semantics
-
-Forthcoming as an update to this file.
+## End of Exam Practice Part 1
 -/
-
-
-def fact : Nat → Nat 
-| 0 => 1
-| (n' + 1) => (n' + 1) * fact n'
-
-def list_len { α : Type } : List α → Nat 
-| [] => 0
-| h::t => 1 + list_len t
-
-def sum_cubes : List Nat → Nat
-| [] => 0
-| h::t => h^3 + sum_cubes t 
-
-#eval sum_cubes [1,2,3,4,5]
-
-def reduce_or : List Bool → Bool
-| [] => false
-| h::t => or h (reduce_or t) 
-
-def reduce_and' : List Bool → Bool
-| [] => true
-| h::t => and h (reduce_and t)
-
-#eval list_len [true, true, true, false]
-
-def is_even : Nat → Bool
-| 0 => true
-| 1 => false
-| (n' + 2) => is_even n'

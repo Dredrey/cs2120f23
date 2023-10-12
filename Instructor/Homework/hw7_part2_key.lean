@@ -1,5 +1,7 @@
 /-!
-# Homework #7 Part 2 -- Exam Practice
+# Exam 1
+
+DO NOT CHEAT.
 -/
 
 /-! 
@@ -13,8 +15,6 @@ otherwise.
 
 -- Define your function here
 
-def pythag : Nat → Nat → Nat → Bool
-| a, b, c => a^2 + b^2 == c^2
 
 -- The following test cases should then pass
 #eval pythag 3 4 5  -- expect true
@@ -31,10 +31,10 @@ inclusive.
 
 -- Define your function here
 
-
 def sum_cubes : Nat → Nat
 | 0 => 0
-| n + 1 => (n + 1)^3 + sum_cubes n
+| (n' + 1) => (n' + 1)^3 + sum_cubes n'
+
 
 -- test case: sum_cubes 4 = 1 + 8 + 27 + 64 = 100
 #eval sum_cubes 4   -- expect 100
@@ -63,19 +63,12 @@ Lean prover to work out a solution for each case.
 
 def prod_ors_to_or_prods {α β γ δ: Type} :
   (α ⊕ β) × (γ ⊕ δ) → α × γ ⊕ α × δ ⊕ β × γ ⊕ β × δ 
-| ((Sum.inl α), (Sum.inl γ)) => Sum.inl (α, γ)
-| ((Sum.inl α), (Sum.inr δ)) => Sum.inr (Sum.inl (α, δ))
-| ((Sum.inr β), (Sum.inl γ)) => Sum.inr (Sum.inr (Sum.inl (β, γ)))
-| ((Sum.inr β), (Sum.inr δ)) => Sum.inr (Sum.inr (Sum.inr (β, δ)))
+| (Sum.inl a, Sum.inl c) => Sum.inl (a,c)
+| (Sum.inl a, Sum.inr d) => Sum.inr (Sum.inl (a,d))
+| (Sum.inr b, Sum.inl c) => Sum.inr (Sum.inr (Sum.inl (b,c)))
+| (Sum.inr b, Sum.inr d) => Sum.inr (Sum.inr (Sum.inr (b,d)))
 
--- Write the second function here from scratch
 
-def or_prods_to_prod_ors {α β γ δ : Type} : 
-  α × γ ⊕ α × δ ⊕ β × γ ⊕ β × δ → (α ⊕ β) × (γ ⊕ δ)
-| Sum.inl (α, γ) => (Sum.inl α, Sum.inl γ)
-| Sum.inr (Sum.inl (α, δ)) => (Sum.inl α, Sum.inr δ)
-| Sum.inr (Sum.inr (Sum.inl (β, γ))) => (Sum.inr β, Sum.inl γ)
-| Sum.inr (Sum.inr (Sum.inr (β, δ))) => (Sum.inr β, Sum.inr δ)
 
 /-!
 ## #4 Propositional Logic Syntax and Semantics
@@ -102,16 +95,8 @@ here using the notation we've defined.
 -/
 
 /-!
-## #5 Propositional Logic Validity
 At the end of your updated Homework #7 file, use our
 validity checking function to check your expression
 for validity, in the expectation that the checker will
 determine that the expression is in fact valid. 
 -/
-
-def sum_cubes' : List Nat → Nat
-| [] => 0
-| h::t => h^3 + sum_cubes' t
-
-#eval sum_cubes' [5, 3, 1, 6]
-

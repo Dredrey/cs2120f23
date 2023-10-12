@@ -678,18 +678,25 @@ short comments to explain what each of your functions does. Write a few test
 cases to demonstrate your results.
 -/
 
--- Here
+def reduce_and : List Bool → Bool
+| [] => true
+| h::t => and h (reduce_and t)
 
+def reduce_or : List Bool → Bool
+| [] => false
+| h::t => or h (reduce_or t)
 
--- A few tests
+def is_valid : Expr → Bool := reduce_and ∘ truth_table_outputs
+def is_sat : Expr → Bool := reduce_or ∘ truth_table_outputs
+def is_unsat : Expr → Bool := not ∘ reduce_or ∘ truth_table_outputs
+
+-- a few tests
 #eval is_valid (X)                      -- expect false
 #eval is_sat (X)                        -- exect true
 #eval is_sat (X ∧ ¬X)                   -- expect false
 #eval is_unsat (X ∧ ¬X)                 -- expect true
 #eval is_valid (X ∨ ¬X)                 -- expect true
 #eval is_valid ((¬(X ∧ Y) ⇒ (¬X ∨ ¬Y))) -- expect true
-#eval is_valid (¬(X ∨ Y) ⇒ (¬X ∧ ¬Y))   -- expect true
-#eval is_valid ((X ∨ Y) ⇒ (X → ¬Y))     -- expect false
 
 -- Test cases
 
