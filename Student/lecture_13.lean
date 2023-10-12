@@ -160,6 +160,7 @@ inductive binary_op : Type
 | and
 | or
 | imp
+| iff
 inductive Expr : Type
 | var_exp (v : var)
 | un_exp (op : unary_op) (e : Expr)
@@ -175,10 +176,15 @@ def eval_un_op : unary_op → (Bool → Bool)
 def implies : Bool → Bool → Bool
 | true, false => false
 | _, _ => true
+def iff : Bool → Bool → Bool
+| true, true => true
+| false, false => true
+| _, _ => false
 def eval_bin_op : binary_op → (Bool → Bool → Bool)
 | binary_op.and => and
 | binary_op.or => or
 | binary_op.imp => implies
+| binary_op.iff => iff
 def Interp := var → Bool  
 def eval_expr : Expr → Interp → Bool 
 | (Expr.var_exp v),        i => i v
@@ -679,7 +685,24 @@ cases to demonstrate your results.
 -/
 
 -- Here
+def is_sat : Expr → Bool
+| e => search_truth_table (truth_table_outputs e)
+  where
+  search_truth_table : List Bool → Bool
+    | false::t => search_truth_table t -- If the head is false, recall the helper function on the rest of the list
+    | true::_ => true -- If there is a true value, the expression is satisfiable
+    | [] => false -- If no true values were found through recursion, then the expression is unsatisfiable
 
+def is_unsat : Expr → Bool
+| e => not (is_sat e) -- is_unsat is just negated is_sat
+
+def is_valid : Expr → Bool
+| e => search_truth_table (truth_table_outputs e)
+  where
+  search_truth_table : List Bool → Bool
+    | false::_ => false -- If any output is false, the expression isn't valid
+    | true::t => search_truth_table t -- If a value is true, the function continues iterating through the truth table
+    | [] => true -- If no false values were found in the truth table, then the expression is valid
 
 -- A few tests
 #eval is_valid (X)                      -- expect false
@@ -689,9 +712,23 @@ cases to demonstrate your results.
 #eval is_valid (X ∨ ¬X)                 -- expect true
 #eval is_valid ((¬(X ∧ Y) ⇒ (¬X ∨ ¬Y))) -- expect true
 #eval is_valid (¬(X ∨ Y) ⇒ (¬X ∧ ¬Y))   -- expect true
-#eval is_valid ((X ∨ Y) ⇒ (X → ¬Y))     -- expect false
+#eval is_valid ((X ∨ Y) ⇒ (X ⇒ ¬Y))     -- expect false
 
--- Test cases
+-- HW Problems 4 & 5 
+
+def a := var.mk 0
+def o := var.mk 1
+def c := var.mk 2
+def b := var.mk 3
+
+def A := {a}
+def O := {o}
+def C := {c}
+def B := {b}
+
+def hw_exp := (((O ∨ A) ∧ (B ∨ C)) ⇒ (A ∧ B) ∨ (A ∧ C) ∨ (O ∧ B) ∨ (O ∧ C))
+
+#eval is_valid hw_exp  -- expect true
 
 
 
