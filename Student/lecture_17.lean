@@ -257,3 +257,28 @@ example : no Chaos := λ (c : Chaos) => nomatch c
 inductive Raining : Prop
 
 example : ¬Raining := λ (r : Raining) => nomatch r
+
+example : ¬ False :=
+  λ f => False.elim f
+
+example (P : Prop) : ¬(P ∧ ¬P) :=
+  λ (⟨p, np⟩) => np p
+
+example (P Q R : Prop) : (P → Q) → (Q → R) → (P → R)
+| ptoq, qtor => λ p => qtor (ptoq p)
+
+example (α β γ : Type) : (α → β) → (β → γ) → (α → γ)
+| α2β, β2γ => λ α => β2γ (α2β α)
+
+example (P Q R : Prop) : P ∨ (Q ∧ R) → (P ∨ Q) ∧ (P ∨ R)
+| Or.inl p => ⟨Or.inl p, Or.inl p⟩
+| Or.inr ⟨q, r⟩ => ⟨Or.inr q, Or.inr r⟩
+
+axiom em : ∀ (P : Prop), P ∨ ¬P
+
+example (A B : Prop) : ¬A ∨ ¬B → ¬(A ∧ B)
+| Or.inl nota => λ ⟨ a, _ ⟩ => nota a
+| Or.inr notb => λ ⟨ _, b ⟩ => notb b
+
+example (A B : Prop) : ¬(A ∧ B) → ¬A ∨ ¬B
+| λ ⟨ a, b ⟩ =>
