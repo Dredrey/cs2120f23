@@ -37,6 +37,10 @@ Here's our simple example reformulated.
 
 def is_even : Nat → Prop := λ n => n % 2 = 0
 
+def is_even' : Nat → Bool := λ n => n % 2 = 0
+
+#eval is_even' 4
+
 /-!
 You can see that is_even is a predicate by checking its type.
 Indeed, it's a function from a natural number to a proposition
@@ -134,6 +138,14 @@ def pythagorean_triple : Nat → Nat → Nat → Prop
 - Write a predicate for the property of being an even-length string
 - Write an expression for the set of all even length strings
 -/
+
+def even_string (s : String) : Prop := is_even (s.length)
+
+def even_string_set : Set String := { s | is_even (s.length)}
+
+def up_to_three : Set Nat := {n | n <= 3 ∧ n >= 1}
+
+#reduce 6 ∈ up_to_three
 
 /-!
 ## Quantifiers
