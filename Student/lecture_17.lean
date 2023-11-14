@@ -204,8 +204,4 @@ example (A B : Prop) : ¬(A ∧ B) -> ¬A ∨ ¬B :=
 λ nab =>
 let proof_of_aornota := em A
 let proof_of_bornotb := em B
-match proof_of_aornota, proof_of_bornotb with
-| Or.inl a, Or.inl b => False.elim (nab ⟨a, b⟩) --I have no idea what to do with this one.
-| Or.inl _, Or.inr nb => Or.inr nb
-| Or.inr na, Or.inl _ => Or.inl na
-| _, Or.inr nb => Or.inr nb
+_
